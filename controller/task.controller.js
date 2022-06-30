@@ -5,7 +5,7 @@ const { catchAsync } = require("../utils/catchAsync.utils");
 const getAllTasks = catchAsync(async (req, res, next) => {
   const tasks = await Task.findAll({
     attributes: ["id", "title", "status"],
-    include: [{ model: User }],
+    include: [{ model: User, attributes: ["id", "name"] }],
   });
   res.status(200).json({
     status: "done",
@@ -23,7 +23,11 @@ const getTaskStatus = catchAsync(async (req, res, next) => {
     }
   }
   if (compared) {
-    const tasks = await Task.findAll({ where: { status } });
+    const tasks = await Task.findAll({
+      attributes: ["id", "title", "status"],
+      include: [{ model: User, attributes: ["id", "name"] }],
+      where: { status },
+    });
     res.status(200).json({
       status: "done",
       tasks,

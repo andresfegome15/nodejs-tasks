@@ -1,10 +1,15 @@
 const bcrypt = require("bcryptjs");
 
+const { Task } = require("../models/task.model");
 const { User } = require("../models/user.model");
 const { catchAsync } = require("../utils/catchAsync.utils");
 
 const getuser = catchAsync(async (req, res, next) => {
-  const user = await User.findAll({ where: { status: "active" } });
+  const user = await User.findAll({
+    attributes: ["id", "name", "status"],
+    include: [{ model: Task, attributes: ["id", "title", "status"] }],
+    where: { status: "active" },
+  });
 
   res.status(200).json({ user });
 });
