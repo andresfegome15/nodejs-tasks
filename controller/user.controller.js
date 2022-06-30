@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+
 const { User } = require("../models/user.model");
 const { catchAsync } = require("../utils/catchAsync.utils");
 
@@ -9,7 +11,13 @@ const getuser = catchAsync(async (req, res, next) => {
 
 const createUser = catchAsync(async (req, res, next) => {
   const { name, email, password } = req.body;
-  const user = await User.create({ name, email, password });
+
+  const salt = await bcrypt.genSalt(12);
+  const hashPassword = await bcrypt.hash(password, salt);
+
+  const user = await User.create({ name, email, password: hashPassword });
+
+  user.password = undefined;
   res.status(201).json({
     status: "done",
     user,
